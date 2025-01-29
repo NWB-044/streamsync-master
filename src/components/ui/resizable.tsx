@@ -36,7 +36,9 @@ const ResizablePanelGroup = ({
       ref={(handle) => {
         groupRef.current = handle ?? null;
         if (handle) {
-          elementRef.current = handle.element as HTMLDivElement;
+          // Access the DOM element directly from the ref callback
+          const element = handle as unknown as { element: HTMLDivElement };
+          elementRef.current = element.element;
         }
       }}
       className={cn(
