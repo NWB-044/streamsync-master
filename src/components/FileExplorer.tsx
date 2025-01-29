@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FolderIcon, FileVideoIcon, SearchIcon, RefreshIcon } from "lucide-react";
+import { FolderIcon, FileVideoIcon, SearchIcon, RefreshCwIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
@@ -69,7 +69,7 @@ export const FileExplorer = () => {
             onClick={fetchFiles}
             className="text-stream-text hover:text-stream-accent"
           >
-            <RefreshIcon className="h-5 w-5" />
+            <RefreshCwIcon className="h-5 w-5" />
           </Button>
         </div>
         <div className="mt-2 text-sm text-gray-400 truncate">
