@@ -9,10 +9,10 @@ const ResizablePanelGroup = ({
   ...props
 }: React.ComponentProps<typeof ResizablePrimitive.PanelGroup>) => {
   const groupRef = useRef<ResizablePrimitive.ImperativePanelGroupHandle>(null);
+  const elementRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const element = groupRef.current?.element;
-    if (!element) return;
+    if (!elementRef.current) return;
 
     const resizeObserver = new ResizeObserver((entries) => {
       requestAnimationFrame(() => {
@@ -22,16 +22,23 @@ const ResizablePanelGroup = ({
       });
     });
 
-    resizeObserver.observe(element);
+    resizeObserver.observe(elementRef.current);
 
     return () => {
-      resizeObserver.unobserve(element);
+      if (elementRef.current) {
+        resizeObserver.unobserve(elementRef.current);
+      }
     };
   }, []);
 
   return (
     <ResizablePrimitive.PanelGroup
-      ref={groupRef}
+      ref={(handle) => {
+        groupRef.current = handle ?? null;
+        if (handle) {
+          elementRef.current = handle.element as HTMLDivElement;
+        }
+      }}
       className={cn(
         "flex h-full w-full data-[panel-group-direction=vertical]:flex-col",
         className
