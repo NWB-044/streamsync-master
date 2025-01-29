@@ -6,34 +6,40 @@ import { Button } from "@/components/ui/button";
 import { MenuIcon, XIcon } from "lucide-react";
 
 const Index = () => {
-  const [isAdmin] = useState(true); // TODO: Implement proper role management
+  const isAdmin = localStorage.getItem("isAdmin") === "true";
   const [showExplorer, setShowExplorer] = useState(true);
   const [showChat, setShowChat] = useState(true);
 
   return (
     <div className="flex h-screen bg-stream-DEFAULT text-stream-text">
-      {/* File Explorer */}
-      <div
-        className={`${
-          showExplorer ? "w-64" : "w-0"
-        } transition-all duration-300 overflow-hidden bg-stream-secondary border-r border-gray-700`}
-      >
-        <FileExplorer />
-      </div>
+      {/* File Explorer (Admin Only) */}
+      {isAdmin && (
+        <div
+          className={`${
+            showExplorer ? "w-64" : "w-0"
+          } transition-all duration-300 overflow-hidden bg-stream-secondary border-r border-gray-700`}
+        >
+          <FileExplorer />
+        </div>
+      )}
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Top Bar */}
         <div className="h-12 bg-stream-secondary flex items-center px-4 border-b border-gray-700">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setShowExplorer(!showExplorer)}
-            className="text-stream-text hover:text-stream-accent"
-          >
-            <MenuIcon className="h-5 w-5" />
-          </Button>
-          <span className="ml-4 font-semibold">Local Stream</span>
+          {isAdmin && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowExplorer(!showExplorer)}
+              className="text-stream-text hover:text-stream-accent"
+            >
+              <MenuIcon className="h-5 w-5" />
+            </Button>
+          )}
+          <span className="ml-4 font-semibold">
+            {isAdmin ? "Admin Stream Control" : "Stream Viewer"}
+          </span>
         </div>
 
         {/* Video and Chat Container */}

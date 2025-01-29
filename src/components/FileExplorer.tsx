@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 
 export const FileExplorer = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const isAdmin = localStorage.getItem("isAdmin") === "true";
 
   // Mock data - replace with actual file system integration
   const files = [
@@ -13,6 +14,8 @@ export const FileExplorer = () => {
     { name: "movie1.mp4", type: "video" },
     { name: "episode1.mp4", type: "video" },
   ];
+
+  if (!isAdmin) return null;
 
   return (
     <div className="h-full flex flex-col">
@@ -32,14 +35,16 @@ export const FileExplorer = () => {
         {files.map((file, index) => (
           <div
             key={index}
-            className="flex items-center px-4 py-2 hover:bg-stream-DEFAULT cursor-pointer"
+            className="flex items-center px-4 py-2 hover:bg-stream-DEFAULT cursor-pointer group"
           >
             {file.type === "folder" ? (
-              <FolderIcon className="h-5 w-5 text-stream-accent mr-2" />
+              <FolderIcon className="h-5 w-5 text-stream-accent mr-2 group-hover:text-stream-accent/80" />
             ) : (
-              <FileVideoIcon className="h-5 w-5 text-stream-text mr-2" />
+              <FileVideoIcon className="h-5 w-5 text-stream-text mr-2 group-hover:text-stream-accent" />
             )}
-            <span>{file.name}</span>
+            <span className="group-hover:text-stream-accent transition-colors">
+              {file.name}
+            </span>
           </div>
         ))}
       </div>
