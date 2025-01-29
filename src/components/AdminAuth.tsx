@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,14 @@ export const AdminAuth = () => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  useEffect(() => {
+    // Check if already authenticated
+    const isAdmin = localStorage.getItem("isAdmin") === "true";
+    if (isAdmin) {
+      navigate("/admin");
+    }
+  }, [navigate]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,6 +54,7 @@ export const AdminAuth = () => {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter admin password"
               className="bg-stream-DEFAULT border-gray-700 text-stream-text"
+              autoComplete="current-password"
             />
           </div>
           <Button

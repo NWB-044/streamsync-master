@@ -8,27 +8,37 @@ interface FileItem {
   name: string;
   type: "folder" | "video" | "subtitle";
   path: string;
+  size?: string;
+  modifiedDate?: string;
 }
 
 export const FileExplorer = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPath, setCurrentPath] = useState("/");
   const [files, setFiles] = useState<FileItem[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const isAdmin = localStorage.getItem("isAdmin") === "true";
   const { toast } = useToast();
 
   const fetchFiles = async () => {
+    if (!isAdmin) return;
+    
+    setIsLoading(true);
     try {
       // This would be replaced with actual file system API calls
-      const response = await fetch(`/api/files?path=${currentPath}`);
+      const response = await fetch(`/api/files?path=${encodeURIComponent(currentPath)}`);
+      if (!response.ok) throw new Error('Failed to fetch files');
       const data = await response.json();
       setFiles(data);
     } catch (error) {
+      console.error('File fetch error:', error);
       toast({
         title: "Error",
         description: "Failed to load files",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -44,8 +54,16 @@ export const FileExplorer = () => {
     } else if (file.type === "video") {
       // Handle video selection
       console.log("Selected video:", file.path);
+      toast({
+        title: "Video Selected",
+        description: file.name,
+      });
     }
   };
+
+  const filteredFiles = files.filter(file => 
+    file.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   if (!isAdmin) return null;
 
@@ -67,9 +85,10 @@ export const FileExplorer = () => {
             variant="ghost"
             size="icon"
             onClick={fetchFiles}
+            disabled={isLoading}
             className="text-stream-text hover:text-stream-accent"
           >
-            <RefreshCwIcon className="h-5 w-5" />
+            <RefreshCwIcon className={`h-5 w-5 ${isLoading ? 'animate-spin' : ''}`} />
           </Button>
         </div>
         <div className="mt-2 text-sm text-gray-400 truncate">
@@ -88,7 +107,7 @@ export const FileExplorer = () => {
           </div>
         )}
         
-        {files.map((file, index) => (
+        {filteredFiles.map((file, index) => (
           <div
             key={index}
             onClick={() => handleFileSelect(file)}
@@ -99,9 +118,16 @@ export const FileExplorer = () => {
             ) : (
               <FileVideoIcon className="h-5 w-5 text-stream-text mr-2 group-hover:text-stream-accent" />
             )}
-            <span className="group-hover:text-stream-accent transition-colors truncate">
-              {file.name}
-            </span>
+            <div className="flex-1">
+              <span className="group-hover:text-stream-accent transition-colors truncate">
+                {file.name}
+              </span>
+              {file.size && (
+                <span className="text-xs text-gray-500 ml-2">
+                  {file.size}
+                </span>
+              )}
+            </div>
           </div>
         ))}
       </div>
