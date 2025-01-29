@@ -21,7 +21,9 @@ const ResizablePanelGroup = ({
       rafId = requestAnimationFrame(() => {
         entries.forEach(() => {
           // Handle resize if needed
-          groupRef.current?.layout?.();
+          if (groupRef.current) {
+            (groupRef.current as any).layout();
+          }
         });
       });
     });
