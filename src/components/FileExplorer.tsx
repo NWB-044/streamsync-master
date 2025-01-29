@@ -52,7 +52,6 @@ export const FileExplorer = () => {
     if (file.type === "folder") {
       setCurrentPath(`${currentPath}${file.name}/`);
     } else if (file.type === "video") {
-      // Handle video selection
       console.log("Selected video:", file.path);
       toast({
         title: "Video Selected",

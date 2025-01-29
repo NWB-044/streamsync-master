@@ -5,10 +5,9 @@ import { Input } from "@/components/ui/input";
 import { LockIcon } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
-const ADMIN_PASSWORD = "admin123"; // In production, this should be stored securely
-
 export const AdminAuth = () => {
   const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -20,19 +19,33 @@ export const AdminAuth = () => {
     }
   }, [navigate]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === ADMIN_PASSWORD) {
-      localStorage.setItem("isAdmin", "true");
-      toast({
-        title: "Success",
-        description: "Welcome, Admin!",
+    try {
+      // This would be replaced with actual authentication API call
+      const response = await fetch('/api/admin/auth', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
       });
-      navigate("/admin");
-    } else {
+
+      if (response.ok) {
+        localStorage.setItem("isAdmin", "true");
+        localStorage.setItem("username", username);
+        toast({
+          title: "Success",
+          description: "Welcome, Admin!",
+        });
+        navigate("/admin");
+      } else {
+        throw new Error('Invalid credentials');
+      }
+    } catch (error) {
       toast({
         title: "Error",
-        description: "Invalid password",
+        description: "Invalid username or password",
         variant: "destructive",
       });
     }
@@ -44,15 +57,23 @@ export const AdminAuth = () => {
         <div className="text-center">
           <LockIcon className="mx-auto h-12 w-12 text-stream-accent" />
           <h2 className="mt-6 text-3xl font-bold text-stream-text">Admin Access</h2>
-          <p className="mt-2 text-sm text-gray-400">Enter password to access admin controls</p>
+          <p className="mt-2 text-sm text-gray-400">Enter your credentials to access admin controls</p>
         </div>
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
-          <div>
+          <div className="space-y-4">
+            <Input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Username"
+              className="bg-stream-DEFAULT border-gray-700 text-stream-text"
+              autoComplete="username"
+            />
             <Input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter admin password"
+              placeholder="Password"
               className="bg-stream-DEFAULT border-gray-700 text-stream-text"
               autoComplete="current-password"
             />

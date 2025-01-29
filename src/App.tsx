@@ -7,7 +7,14 @@ import Index from "./pages/Index";
 import { AdminAuth } from "./components/AdminAuth";
 import NotFound from "./pages/NotFound";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   const isAdmin = localStorage.getItem("isAdmin") === "true";
