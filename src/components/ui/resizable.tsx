@@ -8,11 +8,13 @@ const ResizablePanelGroup = ({
   className,
   ...props
 }: React.ComponentProps<typeof ResizablePrimitive.PanelGroup>) => {
-  const groupRef = useRef<HTMLDivElement>(null);
+  const groupRef = useRef<ResizablePrimitive.ImperativePanelGroupHandle>(null);
 
   useEffect(() => {
+    const element = groupRef.current?.element;
+    if (!element) return;
+
     const resizeObserver = new ResizeObserver((entries) => {
-      // Debounce resize notifications
       requestAnimationFrame(() => {
         entries.forEach(() => {
           // Handle resize if needed
@@ -20,14 +22,10 @@ const ResizablePanelGroup = ({
       });
     });
 
-    if (groupRef.current) {
-      resizeObserver.observe(groupRef.current);
-    }
+    resizeObserver.observe(element);
 
     return () => {
-      if (groupRef.current) {
-        resizeObserver.unobserve(groupRef.current);
-      }
+      resizeObserver.unobserve(element);
     };
   }, []);
 
