@@ -14,10 +14,14 @@ const ResizablePanelGroup = ({
   useEffect(() => {
     if (!elementRef.current) return;
 
+    let rafId: number;
     const resizeObserver = new ResizeObserver((entries) => {
-      requestAnimationFrame(() => {
+      // Use requestAnimationFrame to throttle updates
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
         entries.forEach(() => {
           // Handle resize if needed
+          groupRef.current?.layout?.();
         });
       });
     });
@@ -25,9 +29,11 @@ const ResizablePanelGroup = ({
     resizeObserver.observe(elementRef.current);
 
     return () => {
+      cancelAnimationFrame(rafId);
       if (elementRef.current) {
         resizeObserver.unobserve(elementRef.current);
       }
+      resizeObserver.disconnect();
     };
   }, []);
 
