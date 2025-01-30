@@ -7,45 +7,33 @@ import { useToast } from "@/components/ui/use-toast";
 
 export const AdminAuth = () => {
   const [password, setPassword] = useState("");
-  const [username, setUsername] = useState("");
+  const [nickname, setNickname] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check if already authenticated
     const isAdmin = localStorage.getItem("isAdmin") === "true";
     if (isAdmin) {
       navigate("/admin");
     }
   }, [navigate]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      // This would be replaced with actual authentication API call
-      const response = await fetch('/api/admin/auth', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
+    
+    // Verify admin credentials
+    if (password === "1732010" && nickname === "Bipho") {
+      localStorage.setItem("isAdmin", "true");
+      localStorage.setItem("username", nickname);
+      toast({
+        title: "Login Berhasil",
+        description: "Selamat datang, Admin!",
       });
-
-      if (response.ok) {
-        localStorage.setItem("isAdmin", "true");
-        localStorage.setItem("username", username);
-        toast({
-          title: "Success",
-          description: "Welcome, Admin!",
-        });
-        navigate("/admin");
-      } else {
-        throw new Error('Invalid credentials');
-      }
-    } catch (error) {
+      navigate("/admin");
+    } else {
       toast({
         title: "Error",
-        description: "Invalid username or password",
+        description: "Nickname atau password salah",
         variant: "destructive",
       });
     }
@@ -57,15 +45,15 @@ export const AdminAuth = () => {
         <div className="text-center">
           <LockIcon className="mx-auto h-12 w-12 text-stream-accent" />
           <h2 className="mt-6 text-3xl font-bold text-stream-text">Admin Access</h2>
-          <p className="mt-2 text-sm text-gray-400">Enter your credentials to access admin controls</p>
+          <p className="mt-2 text-sm text-gray-400">Masukkan kredensial admin</p>
         </div>
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
           <div className="space-y-4">
             <Input
               type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Username"
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+              placeholder="Nickname"
               className="bg-stream-DEFAULT border-gray-700 text-stream-text"
               autoComplete="username"
             />
@@ -82,7 +70,7 @@ export const AdminAuth = () => {
             type="submit"
             className="w-full bg-stream-accent hover:bg-stream-accent/90 text-white"
           >
-            Access Admin Panel
+            Masuk sebagai Admin
           </Button>
         </form>
       </div>
